@@ -143,7 +143,13 @@ open class LightboxController: UIViewController {
   open fileprivate(set) var seen = false
   public var shouldToggleControlsOnTap = true
 
-  lazy var transitionManager: LightboxTransition = LightboxTransition()
+  public var transitionManager: LightboxTransition? {
+    didSet {
+      transitionManager?.lightboxController = self
+      transitionManager?.scrollView = scrollView
+      transitioningDelegate = transitionManager
+    }
+  }
   var pageViews = [PageView]()
   var statusBarHidden = false
 
@@ -174,9 +180,7 @@ open class LightboxController: UIViewController {
     statusBarHidden = UIApplication.shared.isStatusBarHidden
 
     view.backgroundColor = UIColor.black
-    transitionManager.lightboxController = self
-    transitionManager.scrollView = scrollView
-    transitioningDelegate = transitionManager
+
 
     [scrollView, overlayView, headerView, footerView].forEach { view.addSubview($0) }
     overlayView.addGestureRecognizer(overlayTapGestureRecognizer)
