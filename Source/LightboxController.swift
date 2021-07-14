@@ -143,7 +143,24 @@ open class LightboxController: UIViewController {
   open fileprivate(set) var seen = false
   public var shouldToggleControlsOnTap = true
 
-  lazy var transitionManager: LightboxTransition = LightboxTransition()
+  public var useTransitionManager: Bool {
+    didSet {
+      if useTransitionManager {
+        transitionManager = LightboxTransition()
+      } else {
+        transitionManager = nil
+      }
+    }
+  }
+
+  var transitionManager: LightboxTransition? {
+    didSet {
+      transitionManager?.lightboxController = self
+      transitionManager?.scrollView = scrollView
+      transitioningDelegate = transitionManager
+    }
+  }
+
   var pageViews = [PageView]()
   var statusBarHidden = false
 
@@ -155,6 +172,7 @@ open class LightboxController: UIViewController {
   public init(images: [LightboxImage] = [], startIndex index: Int = 0) {
     self.initialImages = images
     self.initialPage = index
+    self.useTransitionManager = false
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -170,13 +188,11 @@ open class LightboxController: UIViewController {
     // 9 July 2020: @3lvis
     // Lightbox hasn't been optimized to be used in presentation styles other than fullscreen.
     modalPresentationStyle = .fullScreen
-    
+
     statusBarHidden = UIApplication.shared.isStatusBarHidden
 
     view.backgroundColor = UIColor.black
-    transitionManager.lightboxController = self
-    transitionManager.scrollView = scrollView
-    transitioningDelegate = transitionManager
+
 
     [scrollView, overlayView, headerView, footerView].forEach { view.addSubview($0) }
     overlayView.addGestureRecognizer(overlayTapGestureRecognizer)
@@ -206,7 +222,7 @@ open class LightboxController: UIViewController {
       width: view.bounds.width,
       height: 100
     )
-    
+
     if !presented {
       presented = true
       configureLayout(view.bounds.size)

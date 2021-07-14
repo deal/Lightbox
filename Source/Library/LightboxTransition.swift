@@ -44,15 +44,19 @@ class LightboxTransition: UIPercentDrivenInteractiveTransition {
 
     switch gesture.state {
     case .began:
-      interactive = true
-      lightboxController?.presented = false
-      lightboxController?.dismiss(animated: true, completion: nil)
-      if let origin = scrollView?.frame.origin { initialOrigin = origin }
+      if translation.y > 0 {
+        interactive = true
+        lightboxController?.presented = false
+        lightboxController?.dismiss(animated: true, completion: nil)
+        if let origin = scrollView?.frame.origin { initialOrigin = origin }
+      }
     case .changed:
+      guard interactive else { return }
       update(percentage)
       scrollView?.frame.origin.y = initialOrigin.y + translation.y
     case .ended, .cancelled:
-
+      guard interactive else { return }
+        
       var time = translation.y * 3 / abs(velocity.y)
       if time > 1 { time = 0.7 }
 
