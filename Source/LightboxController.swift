@@ -142,11 +142,13 @@ open class LightboxController: UIViewController {
   open internal(set) var presented = false
   open fileprivate(set) var seen = false
   public var shouldToggleControlsOnTap = true
+  public var handleDismissOnDrag = true
 
   public var useTransitionManager: Bool {
     didSet {
       if useTransitionManager {
         transitionManager = LightboxTransition()
+        transitionManager?.handleDismissOnDrag = handleDismissOnDrag
       } else {
         transitionManager = nil
       }

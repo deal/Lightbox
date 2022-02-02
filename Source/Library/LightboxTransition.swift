@@ -12,6 +12,7 @@ class LightboxTransition: UIPercentDrivenInteractiveTransition {
 
   var interactive = false
   var dismissing = false
+  var handleDismissOnDrag = true
   var initialOrigin = CGPoint(x: 0, y: 0)
 
   var scrollView: UIScrollView? {
@@ -44,7 +45,7 @@ class LightboxTransition: UIPercentDrivenInteractiveTransition {
 
     switch gesture.state {
     case .began:
-      if translation.y > 0 {
+      if translation.y > 0 && handleDismissOnDrag {
         interactive = true
         lightboxController?.presented = false
         lightboxController?.dismiss(animated: true, completion: nil)
